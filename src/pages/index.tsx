@@ -1,4 +1,5 @@
 import Button from '../components/Button';
+import Form from '../components/Form';
 import Layout from '../components/Layout'
 import Table from '../components/Table'
 
@@ -39,6 +40,7 @@ export default function Home() {
             clientSelected={clientSelected}
             clientExclude={clientExclude}
           />
+          <Form client={clients[2]}></Form>
        </Layout>
     </div>
   )
