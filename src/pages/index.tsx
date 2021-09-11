@@ -1,51 +1,22 @@
-import { useState, useEffect } from 'react';
-import CollectionClient from '../backend/db/CollectionClient';
 import Button from '../components/Button';
 import Form from '../components/Form';
 import Layout from '../components/Layout'
 import Table from '../components/Table'
 
-import Client from '../core/Client';
-import ClientRepository from '../core/ClientRepository';
+import useClients from '../hooks/useClients';
 
 export default function Home() {
-  const repo: ClientRepository = new CollectionClient()
+  const { 
+    newClient, 
+    excludeClient, 
+    selectedClient,
+    saveClient,
+    client,
+    clients,
+    tableVisible,
+    showTable,
+  } = useClients()
 
-  const [visible, setVisible] = useState<'table' | 'form'>('table')
-  const [client, setClient] = useState<Client>(Client.empty())
-  const [clients, setClients] = useState<Client[]>([])
-
-  useEffect(getAll, [])
-
-  function getAll() {
-    repo.index().then(clients => {
-      setClients(clients)
-      setVisible('table')
-    })
-  }
-
-
-  function clientSelected(client: Client) {
-    setClient(client)
-    setVisible('form')
-  }
-
-  async function clientExclude(client: Client) {
-    await repo.delete(client)
-    getAll()
-  }
-
-  function newClient() {
-    setClient(Client.empty())
-    setVisible('form')
-  }
-
-  async function saveClient(client: Client) {
-    await repo.save(client)
-    getAll()
-  }
-
-  
 
   return (
     <div className={`
@@ -54,7 +25,7 @@ export default function Home() {
       text-white
     `}>
       <Layout title="Cadastro simples">
-        {visible === 'table' ? (
+        {tableVisible ? (
           <>
             <div className="flex justify-end">
               <Button
@@ -67,8 +38,8 @@ export default function Home() {
             </div>
             <Table
               clients={clients}
-              clientSelected={clientSelected}
-              clientExclude={clientExclude}
+              clientSelected={selectedClient}
+              clientExclude={excludeClient}
             />
           </>
 
@@ -76,7 +47,7 @@ export default function Home() {
           <Form
             client={client}
             clientChanged={saveClient}
-            canceled={() => setVisible('table')}
+            canceled={showTable}
           />
         )}
       </Layout>
